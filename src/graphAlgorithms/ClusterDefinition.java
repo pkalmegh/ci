@@ -1,4 +1,4 @@
-package graphRepresentation;
+package graphAlgorithms;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public interface Movie {
 	
-	public String getMovieTitle(int movieId);
+	public String getMovieTitle();
 	public void setMovieTitle(String movieTitle);
 	
 	public int getMovieId();

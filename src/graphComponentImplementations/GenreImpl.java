@@ -32,12 +32,12 @@ public class GenreImpl implements Node, Genre{
     }
 
 	@Override
-	public String getGenre(int movieId) {
+	public String getGenre() {
 		return (String) underlyingNode.getProperty(TITLE_PROPERTY);
 	}
 
 	@Override
-	public void setGenre(int movieId, String genre) {
+	public void setGenre(String genre) {
 		 underlyingNode.setProperty(TITLE_PROPERTY, genre );
 	}
 

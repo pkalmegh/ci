@@ -22,6 +22,8 @@ import graphComponents.User;
 public class UserImpl implements Node, User{
 	public int userId = 0;
 	private static final String ID_PROPERTY = "id";
+    private static final String TITLE_PROPERTY = "title";
+
     private final Node underlyingNode;
     
     public UserImpl(final Node node ){
@@ -40,6 +42,17 @@ public class UserImpl implements Node, User{
 	@Override
 	public void setUserId(int userId) {
 		 underlyingNode.setProperty(ID_PROPERTY, userId);
+	}
+	
+	@Override
+	public String getUserName() {
+		return (String) underlyingNode.getProperty(TITLE_PROPERTY);
+	}
+
+	@Override
+	public void setName(String userName) {
+		underlyingNode.setProperty(TITLE_PROPERTY, userName);
+		
 	}
 
 	@Override
@@ -231,4 +244,6 @@ public class UserImpl implements Node, User{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 }

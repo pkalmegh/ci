@@ -36,7 +36,7 @@ public class MovieImpl implements Node, Movie{
     }
 
 	@Override
-	public String getMovieTitle(int movieId){
+	public String getMovieTitle(){
 		return (String) underlyingNode.getProperty(TITLE_PROPERTY);
 	}
 

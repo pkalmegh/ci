@@ -1,4 +1,4 @@
-package graphRepresentation;
+package graphAlgorithms;
 
 import java.util.Map;
 import java.util.Set;
