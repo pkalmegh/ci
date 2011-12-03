@@ -1,4 +1,6 @@
-package graphServices;
+package graphServiceImplementations;
+
+import graphServices.GraphDBService;
 
 import java.util.Map;
 
@@ -11,13 +13,15 @@ public class GraphDBServiceImpl implements GraphDBService {
     private static GraphDatabaseService graphDb;
     
     @Override
-    public void startGraphDb(){
+    public GraphDatabaseService startGraphDb(){
     	graphDb = new EmbeddedGraphDatabase( DB_PATH );
+    	return graphDb;
     }
      
     @Override
-	public void startGraphDb( Map<String, String> settings ){
+	public GraphDatabaseService startGraphDb( Map<String, String> settings ){
 		graphDb = new EmbeddedGraphDatabase( DB_PATH, settings );
+    	return graphDb;
 	}
 	
 	@Override

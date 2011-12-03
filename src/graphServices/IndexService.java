@@ -7,6 +7,5 @@ public interface IndexService{
     Node getSingleNode( String key, Object value );
     Iterable<Node> getNodes( String key, Object value );
     void removeIndex( Node node, String key, Object value );
-    //void setIsolation( Isolation level );
     void shutdown();
 }

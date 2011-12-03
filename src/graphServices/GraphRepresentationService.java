@@ -12,9 +12,11 @@ import org.neo4j.graphdb.Relationship;
 
 public interface GraphRepresentationService {
     User createUser(int id);
-    User getUser( int id );
+    User getUser( String name);
+    User getUser( int id);
     
     Movie createMovie(int id, String title);
+    Movie getMovie(String title);
     Movie getMovie(int id);
     
     Rating createUserMovieRelation( User user, Movie movie, int rating );

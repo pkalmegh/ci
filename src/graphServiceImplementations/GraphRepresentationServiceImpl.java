@@ -1,4 +1,4 @@
-package graphServices;
+package graphServiceImplementations;
 
 import graphComponentImplementations.GenreImpl;
 import graphComponentImplementations.MovieImpl;
@@ -11,25 +11,35 @@ import graphComponents.Rating;
 import graphComponents.RelTypes;
 import graphComponents.Tag;
 import graphComponents.User;
+import graphServices.GraphDBSearchEngine;
+import graphServices.GraphRepresentationService;
+import graphServices.IndexService;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.index.lucene.LuceneIndexProvider;
 
 public class GraphRepresentationServiceImpl 
 	implements GraphRepresentationService{
 
-	 
-	    private GraphDBService graphDbService;
-	    private IndexService userIndexService;
-	    private IndexService movieIndexService;
-	    private IndexService genreIndexService;
-	    private IndexService tagIndexService;
+	    private GraphDatabaseService graphDbService;
+	    private LuceneIndexProvider indexService;
+	    private GraphDBSearchEngine searchEngine;
 	    
 	    private static final String ID_PROPERTY = "id";
 	    private static final String TITLE_PROPERTY = "title";
+	    
+    public GraphRepresentationServiceImpl(GraphDatabaseService grapDbService, 
+    		GraphDBSearchEngine searchEngine) {
+        this.graphDbService = graphDbService;
+        this.indexService = new LuceneIndexProvider( graphDbService );
+        this.searchEngine = searchEngine;
+	}
+	    
 	    
 	@Override
 	public User createUser(int id) {
@@ -38,7 +48,9 @@ public class GraphRepresentationServiceImpl
         final User user = new UserImpl( userNode );
         user.setUserId(id);
         user.setName( name );
-        userIndexService.index( userNode, ID_PROPERTY, id );
+        indexService.index( userNode, ID_PROPERTY, id );
+        indexService.index(userNode, TITLE_PROPERTY, name);
+        searchEngine.indexUser( user );
         return user;
     }
 
@@ -48,8 +60,9 @@ public class GraphRepresentationServiceImpl
         final Movie movie = new MovieImpl( movieNode );
         movie.setMovieId(id);
         movie.setMovieTitle( title );
-        //searchEngine.indexMovie( movie );
-        movieIndexService.index( movieNode, ID_PROPERTY, id );
+        indexService.index( movieNode, ID_PROPERTY, id );
+        indexService.index(movieNode, TITLE_PROPERTY, title);
+        searchEngine.indexMovie( movie );
         return movie;	
 	}
 
@@ -76,48 +89,72 @@ public class GraphRepresentationServiceImpl
 	}
 
 	@Override
-	public User getUser(int id) {
-      Node userNode = userIndexService.getSingleNode( ID_PROPERTY, id );
-/*        if ( userNode == null ){
-            userNode = searchEngine.searchUser(id);
+	public User getUser(String name) {
+      Node userNode = indexService.getSingleNode( TITLE_PROPERTY, name );
+        if ( userNode == null ){
+            userNode = searchEngine.searchUser(name);
         }
-*/        User user = null;
+        User user = null;
         if ( userNode != null ){
             user = new UserImpl( userNode );
         }
         return user;	
 	}
+	
+	@Override
+	public User getUser(int id) {
+	    Node userNode = indexService.getSingleNode( ID_PROPERTY, id );
+		User user = null;
+		if ( userNode != null ){
+		    user = new UserImpl( userNode );
+		}
+		return user;	
+	}
+
 
 	@Override
-	public Movie getMovie(int movieId) {
-		Node movieNode = movieIndexService.getSingleNode( ID_PROPERTY, movieId );
-/*        if ( movieNode == null ){
+	public Movie getMovie(String title) {
+		Node movieNode = indexService.getSingleNode( TITLE_PROPERTY, title );
+		
+        if ( movieNode == null ){
             movieNode = searchEngine.searchMovie(title);
         }
-*/        Movie movie = null;
+        Movie movie = null;
+        if ( movieNode != null ){
+            movie = new MovieImpl( movieNode );
+        }
+        return movie;	
+	}
+	
+	@Override
+	public Movie getMovie(int id) {
+		Node movieNode = indexService.getSingleNode( ID_PROPERTY, id );
+        Movie movie = null;
         if ( movieNode != null ){
             movie = new MovieImpl( movieNode );
         }
         return movie;	
 	}
 
+	
+
 	@Override
 	public Genre createGenre(String title) {
 		final Node genreNode = graphDbService.createNode();
         final Genre genre = new GenreImpl( genreNode );
         genre.setGenre(title);
-        //searchEngine.indexGenre( genre );
-        genreIndexService.index( genreNode, TITLE_PROPERTY, title );
+        searchEngine.indexGenre( genre );
+        indexService.index( genreNode, TITLE_PROPERTY, title );
         return genre;	
 	}
 
 	@Override
 	public Genre getGenre(String title) {
-		Node genreNode = genreIndexService.getSingleNode(TITLE_PROPERTY, title);
-/*        if ( genreNode == null ){
-            genreNode = searchEngine.searchgenre(title);
+		Node genreNode = indexService.getSingleNode(TITLE_PROPERTY, title);
+        if ( genreNode == null ){
+            genreNode = searchEngine.searchGenre(title);
         }
-*/        Genre genre = null;
+        Genre genre = null;
         if ( genreNode != null ){
             genre = new GenreImpl( genreNode );
         }
@@ -143,13 +180,18 @@ public class GraphRepresentationServiceImpl
 		final Node tagNode = graphDbService.createNode();
 		final Tag tag = new TagImpl(tagNode);
 		tag.setTag(title);
-		tagIndexService.index(tagNode, TITLE_PROPERTY, title);
+		indexService.index(tagNode, TITLE_PROPERTY, title);
+		searchEngine.indexTag(tag);
 		return tag;
 	}
 
 	@Override
 	public Tag getTag(String title) {
-		Node tagNode = genreIndexService.getSingleNode(TITLE_PROPERTY, title);
+		Node tagNode = indexService.getSingleNode(TITLE_PROPERTY, title);
+        if ( tagNode == null ){
+            tagNode = searchEngine.searchTag(title);
+        }
+
         Tag tag = null;
         if ( tagNode != null ){
             tag = new TagImpl( tagNode );
@@ -188,5 +230,6 @@ public class GraphRepresentationServiceImpl
 		
 		return relationships;
 	}
+
 
 }

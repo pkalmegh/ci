@@ -4,8 +4,8 @@ import graphComponents.Genre;
 import graphComponents.Movie;
 import graphComponents.Tag;
 import graphComponents.User;
+import graphServiceImplementations.GraphRepresentationServiceImpl;
 import graphServices.GraphRepresentationService;
-import graphServices.GraphRepresentationServiceImpl;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,7 +14,12 @@ import java.io.IOException;
 
 public class DataReaderImpl implements DataReader	{
 	
-	private GraphRepresentationService grs = new GraphRepresentationServiceImpl();
+	private GraphRepresentationService grs;
+	
+	public DataReaderImpl(GraphRepresentationService grs) {
+		this.grs = grs;
+	}
+	
 
 	@Override
 	public void parseMovieGenreData(String file) {
@@ -24,15 +29,25 @@ public class DataReaderImpl implements DataReader	{
         try {
 			BufferedReader fileReader = new BufferedReader( new FileReader( file ) );
 			String line = fileReader.readLine();
-			while ( line != null ){
+			int lines = 0;
+			while ( line != null && lines++ <=10){
 				String[] movieData = line.split("::");
 				if(movieData.length == 3){
 					int movieId = Integer.parseInt(movieData[0]);
 					String movieTitle = movieData[1];
-					String movieGenre = movieData[2];
+					String movieGenres = movieData[2];
 					Movie movie = grs.createMovie(movieId, movieTitle);
-					Genre genre = grs.createGenre(movieGenre);
-					grs.createMovieGenreRelation(movie, genre);
+					if(movieGenres.contains("|")){
+						String[]genres = movieGenres.split("|");
+						for (int i = 0; i < genres.length; i++) {
+							Genre genre = grs.getGenre(genres[i]);
+							if(genre == null){
+								genre = grs.createGenre(genres[i]);
+							}
+								
+							grs.createMovieGenreRelation(movie, genre);
+						}
+					}
 				}else{
 					System.out.println("BADLINE - " + line);
 				}
@@ -55,7 +70,8 @@ public class DataReaderImpl implements DataReader	{
         try {
 			BufferedReader fileReader = new BufferedReader( new FileReader( file ) );
 			String line = fileReader.readLine();
-			while ( line != null ){
+			int lines = 0;
+			while ( line != null && lines++ <=10){
 				String[] ratingData = line.split("::");
 				if(ratingData.length == 4){
 					int userId = Integer.parseInt(ratingData[0]);
@@ -89,7 +105,8 @@ public class DataReaderImpl implements DataReader	{
         try {
 			BufferedReader fileReader = new BufferedReader( new FileReader( file ) );
 			String line = fileReader.readLine();
-			while ( line != null ){
+			int lines = 0;
+			while ( line != null && lines++ <=10){
 				String[] tagsData = line.split("::");
 				if(tagsData.length == 4){
 					int userId = Integer.parseInt(tagsData[0]);
