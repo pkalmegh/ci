@@ -13,7 +13,6 @@ import graphComponents.Tag;
 import graphComponents.User;
 import graphServices.GraphDBSearchEngine;
 import graphServices.GraphRepresentationService;
-import graphServices.IndexService;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,22 +20,23 @@ import java.util.List;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.index.lucene.LuceneIndexProvider;
+import org.neo4j.index.lucene.LuceneIndexService;
+import org.neo4j.index.IndexService;
 
 public class GraphRepresentationServiceImpl 
 	implements GraphRepresentationService{
 
 	    private GraphDatabaseService graphDbService;
-	    private LuceneIndexProvider indexService;
+	    private IndexService indexService;
 	    private GraphDBSearchEngine searchEngine;
 	    
 	    private static final String ID_PROPERTY = "id";
 	    private static final String TITLE_PROPERTY = "title";
 	    
-    public GraphRepresentationServiceImpl(GraphDatabaseService grapDbService, 
+    public GraphRepresentationServiceImpl(GraphDatabaseService graphDbService, 
     		GraphDBSearchEngine searchEngine) {
         this.graphDbService = graphDbService;
-        this.indexService = new LuceneIndexProvider( graphDbService );
+        this.indexService = new LuceneIndexService(graphDbService);
         this.searchEngine = searchEngine;
 	}
 	    

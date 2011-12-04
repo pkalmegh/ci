@@ -1,13 +1,14 @@
 package graphClient;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-
 import graphServiceImplementations.GraphDBSearchEngineImpl;
 import graphServiceImplementations.GraphDBServiceImpl;
 import graphServiceImplementations.GraphRepresentationServiceImpl;
 import graphServices.GraphDBSearchEngine;
 import graphServices.GraphDBService;
 import graphServices.GraphRepresentationService;
+
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
 
 public class MovieLensDataAnalysis {
 	static DataReader parser;
@@ -18,16 +19,26 @@ public class MovieLensDataAnalysis {
 	public static void main(String[] args) {
 		GraphDBService gdbs = new GraphDBServiceImpl();
 		GraphDatabaseService dbService = gdbs.startGraphDb();
-		
-		GraphDBSearchEngine searchEngine = new GraphDBSearchEngineImpl();
-		GraphRepresentationService grs = 
-				new GraphRepresentationServiceImpl(dbService, searchEngine);
-		
-		parser = new DataReaderImpl(grs);
-		parser.parseMovieGenreData(MOVIES);
-		parser.parseUserMovieRatingData(RATING);
-		parser.parseUserTagsMovieData(TAGS);
-		
+		Transaction transaction = dbService.beginTx();
+		try{
+			GraphDBSearchEngine searchEngine = new GraphDBSearchEngineImpl();
+			GraphRepresentationService grs = 
+					new GraphRepresentationServiceImpl(dbService, searchEngine);
+			
+			parser = new DataReaderImpl(grs);
+			System.out.println("Parsing movies data...");
+			parser.parseMovieGenreData(MOVIES);
+			System.out.println("Parsing ratings data...");
+			parser.parseUserMovieRatingData(RATING);
+			System.out.println("Parsing tags data...");
+			parser.parseUserTagsMovieData(TAGS);
+			
+			transaction.success();
+			transaction.finish();
+		}
+		finally{
+			gdbs.shutdownGraphDb();
+		}
 		
 		
 		

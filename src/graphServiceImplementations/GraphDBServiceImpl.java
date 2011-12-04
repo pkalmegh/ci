@@ -9,7 +9,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 public class GraphDBServiceImpl implements GraphDBService {
-	private static final String DB_PATH = "neo4j-store";
+	private static final String DB_PATH = "neo4j-ci1";
     private static GraphDatabaseService graphDb;
     
     @Override
@@ -21,6 +21,7 @@ public class GraphDBServiceImpl implements GraphDBService {
     @Override
 	public GraphDatabaseService startGraphDb( Map<String, String> settings ){
 		graphDb = new EmbeddedGraphDatabase( DB_PATH, settings );
+		registerShutdownHook();
     	return graphDb;
 	}
 	

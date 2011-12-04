@@ -78,7 +78,7 @@ public class GraphDBSearchEngineImpl implements GraphDBSearchEngine {
     private void index( final String value, final Node node,
 		final String indexName, final GraphDBSearchRelTypes relType ){
 	    Node wordNode = getSingleNode(indexName, value);
-	    if ( wordNode == null ){
+/*	    if ( wordNode == null ){
 	        wordNode = graphDbService.createNode();
 	        // not needed for the functionality
 	        nodeIndex.add(wordNode, partIndexName, part);
@@ -87,7 +87,7 @@ public class GraphDBSearchEngineImpl implements GraphDBSearchEngine {
 	    wordNode.createRelationshipTo( node, relType );
 	    wordNode.setProperty( COUNT_PROPERTY, ((Integer) wordNode
 	        .getProperty( COUNT_PROPERTY, 0 )) + 1 );
-    }
+*/    }
 
 
 }
