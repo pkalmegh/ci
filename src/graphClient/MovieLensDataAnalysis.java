@@ -34,9 +34,9 @@ public class MovieLensDataAnalysis {
 			parser.parseUserTagsMovieData(TAGS);
 			
 			transaction.success();
-			transaction.finish();
 		}
 		finally{
+			transaction.finish();
 			gdbs.shutdownGraphDb();
 		}
 		
