@@ -11,9 +11,11 @@ public interface GraphDBSearchEngine {
 
 	    void indexUser( User user );
 	    Node searchUser( String name );
+	    Node searchUser( int userId );
 
 	    void indexMovie( Movie movie );
 	    Node searchMovie( String title );
+	    Node searchMovie( int movieId );
 
 	    void indexGenre( Genre genre );
 	    Node searchGenre( String genre );

@@ -20,9 +20,8 @@ public class TreeTraverser
         SYMLINK
     }
 
-    public static void main( final String[] args )
-    {
-        graphDb = new EmbeddedGraphDatabase( "target/neo4j-db" );
+    public static void main( final String[] args ){
+        graphDb = new EmbeddedGraphDatabase("treetraverser");
         Transaction tx = graphDb.beginTx();
         try
         {

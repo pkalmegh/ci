@@ -29,8 +29,8 @@ public class DataReaderImpl implements DataReader	{
         try {
 			BufferedReader fileReader = new BufferedReader( new FileReader( file ) );
 			String line = fileReader.readLine();
-			int lines = 0;
-			while ( line != null && lines++ <=10){
+			//int lines = 0;
+			while ( line != null){
 				String[] movieData = line.split("::");
 				if(movieData.length == 3){
 					int movieId = Integer.parseInt(movieData[0]);
@@ -38,7 +38,7 @@ public class DataReaderImpl implements DataReader	{
 					String movieGenres = movieData[2];
 					Movie movie = grs.createMovie(movieId, movieTitle);
 					if(movieGenres.contains("|")){
-						String[]genres = movieGenres.split("|");
+						String[]genres = movieGenres.split("\\|");
 						for (int i = 0; i < genres.length; i++) {
 							Genre genre = grs.getGenre(genres[i]);
 							if(genre == null){
@@ -70,13 +70,13 @@ public class DataReaderImpl implements DataReader	{
         try {
 			BufferedReader fileReader = new BufferedReader( new FileReader( file ) );
 			String line = fileReader.readLine();
-			int lines = 0;
-			while ( line != null && lines++ <=10){
+			//int lines = 0;
+			while ( line != null){
 				String[] ratingData = line.split("::");
 				if(ratingData.length == 4){
 					int userId = Integer.parseInt(ratingData[0]);
 					int movieId = Integer.parseInt(ratingData[1]);
-					int rating = Integer.parseInt(ratingData[2]);
+					double rating = Double.parseDouble(ratingData[2]);
 					User user = grs.createUser(userId);
 					Movie movie = grs.getMovie(movieId);
 					if(movie == null){
@@ -105,8 +105,8 @@ public class DataReaderImpl implements DataReader	{
         try {
 			BufferedReader fileReader = new BufferedReader( new FileReader( file ) );
 			String line = fileReader.readLine();
-			int lines = 0;
-			while ( line != null && lines++ <=10){
+			//int lines = 0;
+			while ( line != null){
 				String[] tagsData = line.split("::");
 				if(tagsData.length == 4){
 					int userId = Integer.parseInt(tagsData[0]);

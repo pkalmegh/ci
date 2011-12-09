@@ -1,5 +1,8 @@
 package graphServiceImplementations;
 
+import graphComponentImplementations.GenreImpl;
+import graphComponentImplementations.MovieImpl;
+import graphComponentImplementations.TagImpl;
 import graphComponentImplementations.UserImpl;
 import graphComponents.Genre;
 import graphComponents.Movie;
@@ -7,87 +10,100 @@ import graphComponents.Tag;
 import graphComponents.User;
 import graphServices.GraphDBSearchEngine;
 
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
 
 public class GraphDBSearchEngineImpl implements GraphDBSearchEngine {
 	
-	 private Index<Node> nodeIndex;
-	 private static final String NAME_INDEX = "name";
+	 private Index<Node> searchIndex;
+	 private static final String COUNT_PROPERTY = "count_uses";
+	 private static final String USER = "user"; 
+	 private static final String MOVIE = "movie";
+	 private static final String USER_ID = "userid";
+	 private static final String MOVIE_ID = "movieid";
+	 private static final String GENRE = "genre";
+	 private static final String TAG = "tag";
+	 
+	 public GraphDBSearchEngineImpl(GraphDatabaseService graphDB) {
+		this.searchIndex = graphDB.index().forNodes("searchindex");
+	}
 
 	@Override
 	public void indexUser(User user) {
-		 index( user.getUserName(), ((UserImpl) user).getUnderlyingNode(),
-		            NAME_INDEX, GraphDBSearchRelTypes.USER_NAME );
+		 index( ((UserImpl) user).getUnderlyingNode(), USER, user.getUserName() );
+		 index(  ((UserImpl) user).getUnderlyingNode(), USER_ID, Integer.toString(user.getUserId()));
 	}
 
 	@Override
 	public Node searchUser(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return searchSingle( USER , name);
+	}
+
+	@Override
+	public Node searchUser(int userId) {
+		return searchSingle(USER_ID, Integer.toString(userId));
 	}
 
 	@Override
 	public void indexMovie(Movie movie) {
-		// TODO Auto-generated method stub
-		
+		index( ((MovieImpl) movie).getUnderlyingNode(), MOVIE , movie.getMovieTitle());
+		index( ((MovieImpl) movie).getUnderlyingNode(), MOVIE_ID, Integer.toString(movie.getMovieId()));
 	}
 
 	@Override
 	public Node searchMovie(String title) {
-		// TODO Auto-generated method stub
-		return null;
+		return searchSingle(MOVIE, title);
+	}
+
+	@Override
+	public Node searchMovie(int movieId) {
+		return searchSingle(MOVIE_ID, Integer.toString(movieId) );
 	}
 
 	@Override
 	public void indexGenre(Genre genre) {
-		// TODO Auto-generated method stub
-		
+		index(((GenreImpl) genre).getUnderlyingNode(), GENRE, genre.getGenre());
 	}
 
 	@Override
 	public Node searchGenre(String genre) {
-		// TODO Auto-generated method stub
-		return null;
+		return searchSingle(GENRE, genre);
 	}
 
 	@Override
 	public void indexTag(Tag tag) {
-		// TODO Auto-generated method stub
-		
+		index(((TagImpl) tag).getUnderlyingNode(), TAG, tag.getTag() );
 	}
 
 	@Override
 	public Node searchTag(String tag) {
-		// TODO Auto-generated method stub
-		return null;
+		return searchSingle(TAG, tag);
 	}
 	
 	
     private Node getSingleNode(String key, String value){
-        IndexHits<Node> hits = nodeIndex.get( key, value );
-        for ( Node node : hits )
-        {
-            return node;
+        IndexHits<Node> hits = searchIndex.get( key, value );
+        if(hits != null){
+            for ( Node node : hits ){
+                return node;
+            }
         }
         return null;
     }
 
 
-    private void index( final String value, final Node node,
-		final String indexName, final GraphDBSearchRelTypes relType ){
-	    Node wordNode = getSingleNode(indexName, value);
-/*	    if ( wordNode == null ){
-	        wordNode = graphDbService.createNode();
-	        // not needed for the functionality
-	        nodeIndex.add(wordNode, partIndexName, part);
-	        wordNode.setProperty( WORD_PROPERTY, part );
-	    }
-	    wordNode.createRelationshipTo( node, relType );
-	    wordNode.setProperty( COUNT_PROPERTY, ((Integer) wordNode
-	        .getProperty( COUNT_PROPERTY, 0 )) + 1 );
-*/    }
+    private void index( final Node node, final String keyword, final String value){
+	    node.setProperty( COUNT_PROPERTY, ((Integer) node
+		        .getProperty( COUNT_PROPERTY, 0 )) + 1 );
+        searchIndex.add(node, keyword, value);
+    }
+    
+    private Node searchSingle( final String indexName, final String value){
+    		Node node = getSingleNode(indexName, value);
+            return node;
+    }
 
 
 }

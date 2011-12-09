@@ -1,6 +1,7 @@
 package graphServiceImplementations;
 
 import graphServices.GraphDBService;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -13,26 +14,26 @@ import org.neo4j.kernel.EmbeddedGraphDatabase;
 import org.neo4j.kernel.impl.util.FileUtils;
 
 public class GraphDBServiceImpl implements GraphDBService {
-	private static final String DB_PATH = "neo4j-store";
+	private static final String DB_PATH = "targetdb/cidb";
     private static GraphDatabaseService graphDb;
     
     @Override
     public GraphDatabaseService startGraphDb(){
     	clearDb();
-    	graphDb = new EmbeddedGraphDatabase( DB_PATH );
-    	removeData();
+    	graphDb = new EmbeddedGraphDatabase(DB_PATH);
     	registerShutdownHook();
     	return graphDb;
     }
      
     @Override
-	public GraphDatabaseService startGraphDb( Map<String, String> settings ){
+    public GraphDatabaseService startGraphDb(Map<String, String> settings){
     	clearDb();
 		graphDb = new EmbeddedGraphDatabase( DB_PATH, settings );
 		registerShutdownHook();
     	return graphDb;
 	}
-	
+    
+
 	@Override
 	public void shutdownGraphDb(){
 		System.out.println( "Shutting down database ..." );
@@ -46,7 +47,6 @@ public class GraphDBServiceImpl implements GraphDBService {
 	@Override
 	public void shutdown(){
 	    if ( graphDb != null ){
-	        //deleteExampleNodeSpace();
 	        shutdownGraphDb();
 	    }
 	}

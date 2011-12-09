@@ -40,11 +40,12 @@ public class RatingImpl implements Relationship, Rating{
 
 	@Override
 	public int getRating() {
-		return Integer.parseInt((String) underlyingRel.getProperty(RATE_PROPERTY));
+		Integer rating = (Integer) underlyingRel.getProperty(RATE_PROPERTY);
+		return rating.intValue();
 	}
 
 	@Override
-	public void setRating(int rating) {
+	public void setRating(double rating) {
 		underlyingRel.setProperty(RATE_PROPERTY, rating );
 	}
 

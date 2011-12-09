@@ -36,7 +36,8 @@ public class UserImpl implements Node, User{
     
 	@Override
 	public int getUserId() {
-		return Integer.parseInt((String) underlyingNode.getProperty(ID_PROPERTY));
+		Integer userid = (Integer) underlyingNode.getProperty(ID_PROPERTY);
+		return userid.intValue();
 	}
 
 	@Override

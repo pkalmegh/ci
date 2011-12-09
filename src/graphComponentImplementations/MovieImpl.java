@@ -47,7 +47,8 @@ public class MovieImpl implements Node, Movie{
 
 	@Override
 	public int getMovieId() {
-		return Integer.parseInt((String) underlyingNode.getProperty(ID_PROPERTY));
+		Integer movieid = (Integer) underlyingNode.getProperty(ID_PROPERTY);
+		return movieid.intValue();
 	}
 
 	@Override

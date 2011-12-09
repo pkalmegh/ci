@@ -19,7 +19,7 @@ public interface GraphRepresentationService {
     Movie getMovie(String title);
     Movie getMovie(int id);
     
-    Rating createUserMovieRelation( User user, Movie movie, int rating );
+    Rating createUserMovieRelation( User user, Movie movie, double rating );
     
     Genre createGenre(String title);
     Genre getGenre( String title );
